@@ -1,0 +1,9 @@
+{
+  "EXCHANGE": "okx",
+  "ARK_API_KEY": "9e5ec376-dcb8-4491-b11b-3e854442d727",
+  "ARK_MODEL": "deepseek-v3-1-terminus",
+  "OKX_API_KEY": "0093cfc2-0ad9-4653-83e7-296c1df456b7",
+  "OKX_SECRET_KEY": "AD0191E1476CB560A5DEBC67793EA98C",
+  "OKX_PASSPHRASE": "985783827aA@",
+  "OKX_DEMO": true
+}
