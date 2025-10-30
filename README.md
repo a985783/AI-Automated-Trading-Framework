@@ -1,69 +1,308 @@
-加密货币合约 AI 交易系统（OKX 模拟盘）
+# 🤖 Crypto AI Trading Bot
 
-一个基于 DeepSeek-V3（火山引擎 ARK）的自主交易引擎：固定“20m 趋势 + 5m 执行”框架，内置双重硬风控（单笔 2%、月度 -6%），面向 OKX 模拟盘（USDT 本位永续）。不包含前端，仅日志输出与交易记忆持久化。
+![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue)
+![License: MIT](https://img.shields.io/badge/License-MIT-green)
+![Trading Engine](https://img.shields.io/badge/Engine-DeepSeek%20V3-orange)
+![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)
 
-功能
-- 深度提示词驱动的 AI 决策（价格行为 + 订单流 + 缠论）
-- 20m 趋势判定 + 5m 执行周期
-- 双重硬风控：单笔 2% 风险、月度 -6% 回撤即停
-- 自动下单与持仓跟踪（OKX 模拟盘）
-- 交易记忆与月度统计（`trading_memory.json`）
-- 日志输出到 `outputs/trading_*.log`
+**An autonomous AI-powered cryptocurrency trading engine using DeepSeek-V3 with dual-layer risk management for OKX testnet.**
 
-快速开始
-1) 准备环境（Python 3.9+）
+> 🚀 **20-minute trend confirmation + 5-minute execution** framework with hardened risk controls
+
+---
+
+## ✨ Key Features
+
+| Feature | Description |
+|---------|-------------|
+| 🤖 **AI Decision Engine** | Deep-prompt-driven decisions using price action + order flow analysis |
+| 📊 **Multi-timeframe** | 20m trend confirmation + 5m execution framework |
+| 🛡️ **Risk Management** | Dual hardcoded limits: 2% per-trade max, 6% monthly drawdown max |
+| 📈 **Auto Trading** | Fully automated order execution with position tracking |
+| 💾 **Trade Memory** | Persistent trading history and monthly statistics |
+| 📝 **Detailed Logs** | Real-time trading journal with performance metrics |
+| 🔄 **Multi-Exchange** | Support for OKX (default) & Binance testnet |
+
+---
+
+## 🎯 Core Architecture
+
 ```
+┌─────────────────────────────────────────────────────────────┐
+│                  Market Data Feed                           │
+│              (OHLCV + Technical Indicators)                 │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│            DeepSeek-V3 Decision Engine (ARK API)            │
+│  • Price Action Analysis      • Order Flow                  │
+│  • Technical Indicators       • Confidence Scoring          │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│              Risk Management System                         │
+│  ├─ Per-Trade Limit: 2% of account balance                  │
+│  ├─ Monthly Limit: -6% drawdown max                         │
+│  └─ Position Sizing: Dynamic based on confidence            │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│            OKX/Binance Trade Execution                      │
+│  ├─ Leverage Control (1-20x)    ├─ Stop Loss                │
+│  ├─ Margin Management            └─ Take Profit             │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│         Trade Memory & Statistics Tracking                  │
+│              (JSON Persistence Layer)                       │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🚀 Quick Start
+
+### 1️⃣ Prerequisites
+
+```bash
+# Python 3.9 or higher
+python3 --version
+
+# Virtual environment (optional but recommended)
 python3 -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+```
+
+### 2️⃣ Installation
+
+```bash
+# Clone repository
+git clone https://github.com/yourusername/crypto-ai-trading-bot.git
+cd crypto-ai-trading-bot
+
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-2) 配置密钥
-```
+### 3️⃣ Configuration
+
+```bash
+# Copy example config
 cp config.example.json config.json
-# 编辑 config.json，填入 ARK 与 OKX 模拟盘 API 三件套
+
+# Edit with your credentials (using your preferred editor)
+nano config.json
+# or
+open config.json  # macOS
+
+# Required fields:
+# - ARK_API_KEY: DeepSeek-V3 API key (from Volcano Engine)
+# - EXCHANGE: "okx" (default) or "binance"
+# - OKX_API_KEY, OKX_SECRET_KEY, OKX_PASSPHRASE (if using OKX)
 ```
 
-3) 运行
-```
+### 4️⃣ Run the Bot
+
+```bash
+# Method 1: Direct execution
 python3 crypto_trading_bot_enhanced.py
-# 或
+
+# Method 2: Using startup script
+chmod +x start.sh
 ./start.sh
 ```
 
-4) 查看日志
-```
+### 5️⃣ Monitor Performance
+
+```bash
+# Watch live logs
 tail -f outputs/trading_*.log
+
+# Check trading history
+cat trading_memory.json | python3 -m json.tool
+
+# View trading stats
+# (Stats printed to logs in real-time)
 ```
 
-目录结构
+---
+
+## 📁 Project Structure
+
 ```
-├── crypto_trading_bot_enhanced.py   # 主交易引擎
-├── risk_manager.py                  # 月度风控/交易记忆
-├── config.json                      # 本地密钥（git 忽略）
-├── config.example.json              # 示例配置
-├── outputs/                         # 日志与导出（git 忽略）
-├── trading_memory.json              # 交易记忆（git 忽略）
-├── start.sh                         # 一键启动脚本
-├── RISK_MANAGEMENT_RULES.md         # 风险管理规则
-└── TRADING_SYSTEM_GUIDE.md          # 系统使用说明
+crypto-ai-trading-bot/
+├── crypto_trading_bot_enhanced.py   # Main trading engine
+├── risk_manager.py                  # Risk management & trade memory
+├── config.example.json              # Configuration template
+├── config.json                      # Local config (git-ignored)
+├── requirements.txt                 # Python dependencies
+├── start.sh                         # One-click startup
+│
+├── outputs/                         # Trading logs (git-ignored)
+│   └── trading_YYYYMMDD_HHMMSS.log
+├── trading_memory.json              # Trade history (git-ignored)
+│
+├── README.md                        # This file
+├── CHANGELOG.md                     # Version history
+├── CONTRIBUTING.md                  # Contribution guidelines
+├── LICENSE                          # MIT License
+├── TRADING_SYSTEM_GUIDE.md          # Detailed usage guide
+├── RISK_MANAGEMENT_RULES.md         # Risk management documentation
+└── GITHUB_READY_CHECKLIST.md        # Project improvement checklist
 ```
 
-风险与声明
-- 本代码仅用于研究与教育目的，不构成投资建议。
-- 实盘交易存在本金损失风险。请务必理解并接受相关风险。
-- 默认对接 OKX 模拟盘；若用于实盘请自行添加服务器端止损/止盈等保护。
+---
 
-依赖
-- Python 3.9+
-- openai（ARK SDK 兼容版）
-- ccxt、pandas、numpy
+## ⚙️ Configuration Examples
 
-常见问题
-- 启动报错缺少密钥：请在 `config.json` 中填入 ARK 与 OKX 模拟盘 API。
-- 连接失败：检查网络、时间同步（NTP）、API 权限与白名单。
-- 没有下单：可能因风控限制（单笔 >2% 或接近月度 -6%）。查看日志了解原因。
+### OKX Testnet (Default)
+```json
+{
+  "EXCHANGE": "okx",
+  "ARK_API_KEY": "your-deepseek-v3-key",
+  "OKX_API_KEY": "your-okx-api-key",
+  "OKX_SECRET_KEY": "your-okx-secret-key",
+  "OKX_PASSPHRASE": "your-okx-passphrase"
+}
+```
 
-———
+### Binance Testnet
+```json
+{
+  "EXCHANGE": "binance",
+  "ARK_API_KEY": "your-deepseek-v3-key",
+  "BINANCE_API_KEY": "your-binance-api-key",
+  "BINANCE_SECRET_KEY": "your-binance-secret-key",
+  "BINANCE_TESTNET": true
+}
+```
 
-如需添加前端仪表板或接入其他交易所，可在此基础上扩展（建议保持风控硬约束不变）。
+---
+
+## 📊 Performance Metrics
+
+The bot tracks and reports:
+
+- **Per-Trade Metrics**: Entry price, exit price, P&L, P&L%, hold duration
+- **Risk Metrics**: Risk per trade, leverage used, liquidation price
+- **Monthly Stats**: Total trades, win rate, max drawdown, ROI
+- **AI Metrics**: Decision confidence, signal accuracy, execution time
+
+Example output:
+```
+===============================================================================
+第 1 轮 - 2025-10-30 14:30:00
+===============================================================================
+
+🎯 市场数据: BTC: $42,500.00 (↑2.3%) | ETH: $2,450.00 (↑1.8%) | ...
+
+💭 AI 分析:
+BTC: 强势上升趋势，5m有小回调机会 → 买入信号
+  信心度: 0.75 | 杠杆: 5x | 风险: $150.00 | 目标: $43,200
+
+✅ 执行: BTC 买入 1.2 BTC @ $42,500
+📊 月度统计: 总交易 8 笔 | 胜率 62.5% | 月度P&L: +$1,250
+```
+
+---
+
+## 🛡️ Risk Management
+
+### Hardcoded Limits
+
+```
+Per-Trade Maximum:  2% of account balance
+Monthly Drawdown:   -6% hard stop-loss
+Leverage Range:     1-20x (configurable per trade)
+```
+
+### Example Scenario
+
+Starting balance: $10,000
+- Max risk per trade: $200 (2%)
+- Monthly stop loss level: $9,400 (6% drawdown)
+
+If a trade risks $200 and loses, account becomes $9,800.
+If cumulative losses reach -$600, system stops trading.
+
+---
+
+## 📖 Documentation
+
+| Document | Purpose |
+|----------|---------|
+| [TRADING_SYSTEM_GUIDE.md](TRADING_SYSTEM_GUIDE.md) | Detailed system explanation & trading logic |
+| [RISK_MANAGEMENT_RULES.md](RISK_MANAGEMENT_RULES.md) | Risk framework & hardened constraints |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute & development setup |
+| [CHANGELOG.md](CHANGELOG.md) | Version history & feature releases |
+
+---
+
+## 🚨 Risk Disclosure
+
+**⚠️ IMPORTANT - Please Read Before Using**
+
+- 🔴 **This is experimental software**: Use at your own risk
+- 📚 **Educational purposes only**: Not financial advice
+- 💸 **Live trading risk**: Can result in loss of capital
+- 🧪 **Thoroughly test on testnet first**: Before any real trading
+- 🔐 **Secure your API keys**: Never commit credentials
+- 📞 **Implement safeguards**: Add server-side stop-losses for production
+
+---
+
+## 🔧 Installation Issues?
+
+### Common Problems
+
+| Problem | Solution |
+|---------|----------|
+| `ModuleNotFoundError: openai` | Run `pip install -r requirements.txt` |
+| `Invalid API Key` | Check `config.json` credentials |
+| `Connection refused` | Check internet & API endpoint availability |
+| `InsufficientBalance` | Testnet account needs minimum balance |
+
+👉 See [TRADING_SYSTEM_GUIDE.md](TRADING_SYSTEM_GUIDE.md) for more troubleshooting
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
+- How to report bugs
+- Feature request process
+- Development guidelines
+- Pull request procedures
+
+---
+
+## 📝 License
+
+This project is licensed under the **MIT License** - see [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **DeepSeek-V3**: AI decision engine (via Volcano Engine ARK API)
+- **CCXT**: Cryptocurrency exchange abstraction library
+- **OKX & Binance**: Testnet environments for safe trading practice
+
+---
+
+## 📧 Support
+
+- 📖 Read the documentation
+- 🔍 Search existing issues
+- 💬 Open a discussion
+- 🐛 Report a bug
+
+---
+
+**Happy Trading! 🚀📈**
+
+*Remember: Past performance doesn't guarantee future results. Trade wisely.*
