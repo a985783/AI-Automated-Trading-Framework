@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+
+# Virtual env
+.venv/
+
+# macOS
+.DS_Store
+
+# Secrets
+config.json
+
+# Runtime outputs
+outputs/
+trading_memory.json
+
+# Logs
+*.log
