@@ -71,11 +71,11 @@ class CryptoAITrader:
             # 交易所（仅 OKX）
             'EXCHANGE': 'okx',
             
-            # OKX API（模拟盘）
+            # OKX API（实盘）
             'OKX_API_KEY': os.getenv('OKX_API_KEY', ''),
             'OKX_SECRET_KEY': os.getenv('OKX_SECRET_KEY', ''),
             'OKX_PASSPHRASE': os.getenv('OKX_PASSPHRASE', ''),
-            'OKX_DEMO': True,
+            'OKX_DEMO': False,
         }
 
         # 尝试从 config.json 读取
@@ -91,14 +91,20 @@ class CryptoAITrader:
 
         # 验证 OKX 配置
         if not config.get('OKX_API_KEY') or not config.get('OKX_SECRET_KEY') or not config.get('OKX_PASSPHRASE'):
-            raise ValueError("请设置 OKX_API_KEY/OKX_SECRET_KEY/OKX_PASSPHRASE 并确保是模拟盘(Demo)密钥")
+            raise ValueError("请设置 OKX_API_KEY/OKX_SECRET_KEY/OKX_PASSPHRASE")
+
+        # 实盘警告
+        if not config.get('OKX_DEMO', False):
+            print("\n⚠️  警告：您正在使用 OKX 实盘环境！")
+            print("⚠️  这将使用真实资金进行交易！")
+            print("⚠️  请确保已理解系统的交易逻辑和风险！\n")
         
         return config
 
     
 
     def _init_okx_testnet(self):
-        """初始化 OKX 模拟盘 (USDT 本位永续)"""
+        """初始化 OKX 交易环境 (USDT 本位永续)"""
         exchange = ccxt.okx({
             'apiKey': self.config['OKX_API_KEY'],
             'secret': self.config['OKX_SECRET_KEY'],
@@ -111,22 +117,31 @@ class CryptoAITrader:
             }
         })
 
-        # 启用模拟盘
-        try:
-            exchange.set_sandbox_mode(True)
-        except Exception:
-            # 兼容旧版本：直接设置头部
-            exchange.headers = exchange.headers or {}
-            exchange.headers.update({'x-simulated-trading': '1'})
+        # 根据配置选择模拟盘或实盘
+        is_demo = self.config.get('OKX_DEMO', False)
+        if is_demo:
+            # 启用模拟盘
+            try:
+                exchange.set_sandbox_mode(True)
+            except Exception:
+                # 兼容旧版本：直接设置头部
+                exchange.headers = exchange.headers or {}
+                exchange.headers.update({'x-simulated-trading': '1'})
+            print("✅ 已连接到 OKX 模拟盘")
+        else:
+            # 实盘模式
+            print("✅ 已连接到 OKX 实盘")
 
         # 测试连接
         try:
             balance = exchange.fetch_balance()
             usdt_balance = balance.get('USDT', {}).get('free', 0)
-            print(f"✅ OKX 模拟盘连接成功")
+            env_name = "模拟盘" if is_demo else "实盘"
+            print(f"✅ OKX {env_name}连接成功")
             print(f"USDT 余额: {usdt_balance:.2f}")
         except Exception as e:
-            raise ConnectionError(f"OKX 模拟盘连接失败: {e}")
+            env_name = "模拟盘" if is_demo else "实盘"
+            raise ConnectionError(f"OKX {env_name}连接失败: {e}")
 
         return exchange
 
